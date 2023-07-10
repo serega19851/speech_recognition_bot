@@ -6,14 +6,15 @@ from auxiliary_file import detect_intent_texts
 
 
 def echo(event, vk_api_, project_id, session_id):
+    answer = detect_intent_texts(
+        project_id, session_id, event.text, 'ru-RU')
 
-    answer = detect_intent_texts(project_id, session_id, event.text, 'ru-RU')
-    vk_api_.messages.send(
-        user_id=event.user_id,
-        message=answer,
-        random_id=random.randint(1, 1000)
-    )
-    answer = detect_intent_texts(project_id, session_id, event.text, 'ru-RU')
+    if not answer.intent.is_fallback:
+        vk_api_.messages.send(
+            user_id=event.user_id,
+            message=answer.fulfillment_text,
+            random_id=random.randint(1, 1000)
+        )
 
 
 def main():

@@ -37,7 +37,7 @@ def echo(update: Update, context: CallbackContext) -> None:
     session_id = env.str("TELEGRAM_CHAT_ID")
     answer = detect_intent_texts(
         project_id, session_id, update.message.text, 'ru-RU')
-    update.message.reply_text(answer)
+    update.message.reply_text(answer.fulfillment_text)
 
 
 def main() -> None:
