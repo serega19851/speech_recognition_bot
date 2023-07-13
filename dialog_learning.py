@@ -38,8 +38,8 @@ def main() -> None:
     env.read_env()
     project_id = env.str('PROJECT_ID')
 
-    with open("phrases_file.json", "r") as my_file:
-        phrases = json.loads(my_file.read())
+    with open("phrases_file.json", "r") as file:
+        phrases = json.loads(file.read())
 
     questions_text = phrases["Устройство на работу"]["questions"]
     answer_text = [phrases["Устройство на работу"]["answer"]]

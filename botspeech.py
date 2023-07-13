@@ -26,11 +26,6 @@ def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Здравствуйте')
 
 
-def help_command(update: Update, context: CallbackContext) -> None:
-    """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
-
-
 def sends_response_user(
     update: Update, context: CallbackContext, project_id
 ) -> None:
@@ -59,23 +54,21 @@ def sends_response_user(
 
 
 def main() -> None:
-    while True:
 
-        env = Env()
-        env.read_env()
-        telegram_token = env.str('TELEGRAM_TOKEN')
-        project_id = env.str('PROJECT_ID')
+    env = Env()
+    env.read_env()
+    telegram_token = env.str('TELEGRAM_TOKEN')
+    project_id = env.str('PROJECT_ID')
 
-        updater = Updater(telegram_token)
-        dispatcher = updater.dispatcher
-        dispatcher.add_handler(CommandHandler("start", start))
-        dispatcher.add_handler(CommandHandler("help", help_command))
-        dispatcher.add_handler(MessageHandler(
-            Filters.text & ~Filters.command, partial(
-                sends_response_user, project_id=project_id))
-        )
-        updater.start_polling()
-        updater.idle()
+    updater = Updater(telegram_token)
+    dispatcher = updater.dispatcher
+    dispatcher.add_handler(CommandHandler("start", start))
+    dispatcher.add_handler(MessageHandler(
+        Filters.text & ~Filters.command, partial(
+            sends_response_user, project_id=project_id))
+    )
+    updater.start_polling()
+    updater.idle()
 
 
 if __name__ == '__main__':
