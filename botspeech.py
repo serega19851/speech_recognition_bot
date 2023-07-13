@@ -27,13 +27,11 @@ def start(update: Update, context: CallbackContext) -> None:
 
 
 def sends_response_user(
-    update: Update, context: CallbackContext, project_id
+    update: Update, context: CallbackContext,
+    project_id, session_id,
+    bot_log
 ) -> None:
     """Sends the user message."""
-    env = Env()
-    env.read_env()
-    session_id = env.str("TELEGRAM_CHAT_ID")
-    bot_log = telegram.Bot(token=env.str('TELEGRAM_LOG'))
     try:
         answer = detect_intent_texts(
             project_id, session_id, update.message.text, 'ru-RU')
@@ -54,18 +52,23 @@ def sends_response_user(
 
 
 def main() -> None:
-
     env = Env()
     env.read_env()
     telegram_token = env.str('TELEGRAM_TOKEN')
     project_id = env.str('PROJECT_ID')
+    session_id = env.str("TELEGRAM_CHAT_ID")
+    bot_log = telegram.Bot(token=env.str('TELEGRAM_LOG'))
 
     updater = Updater(telegram_token)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(MessageHandler(
         Filters.text & ~Filters.command, partial(
-            sends_response_user, project_id=project_id))
+            sends_response_user,
+            project_id=project_id,
+            session_id=session_id,
+            bot_log=bot_log
+        ))
     )
     updater.start_polling()
     updater.idle()
