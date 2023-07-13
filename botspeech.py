@@ -4,18 +4,13 @@ import telegram
 from time import sleep
 from telegram.error import NetworkError, TelegramError
 import logging
-from text_dialog_flow import detect_intent_texts
+from utils import detect_intent_texts, TelegramLogsHandler
 from environs import Env
 from telegram import Update
 from telegram.ext import (
     Updater,
     CommandHandler,
     MessageHandler, Filters, CallbackContext
-)
-
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
 )
 
 logger = logging.getLogger(__name__)
@@ -28,8 +23,7 @@ def start(update: Update, context: CallbackContext) -> None:
 
 def sends_response_user(
     update: Update, context: CallbackContext,
-    project_id, session_id,
-    bot_log
+    project_id, session_id
 ) -> None:
     """Sends the user message."""
     try:
@@ -38,17 +32,11 @@ def sends_response_user(
         update.message.reply_text(answer.fulfillment_text)
 
     except NetworkError as network_error:
-        bot_log.send_message(
-            chat_id=session_id,
-            text=f'Ошибка сети tel бота\n{network_error}\n'
-        )
+        logger.error(f'Ошибка сети tel бота\n{network_error}\n')
         sleep(20)
 
     except TelegramError as telegram_error:
-        bot_log.send_message(
-            chat_id=session_id,
-            text=f'Ошибка телеграм\n{telegram_error}\n'
-        )
+        logger.error(f'Ошибка телеграм\n{telegram_error}\n')
 
 
 def main() -> None:
@@ -59,6 +47,13 @@ def main() -> None:
     session_id = env.str("TELEGRAM_CHAT_ID")
     bot_log = telegram.Bot(token=env.str('TELEGRAM_LOG'))
 
+    logging.basicConfig(
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        level=logging.INFO
+    )
+    logger.setLevel(logging.INFO)
+    logger.addHandler(TelegramLogsHandler(bot_log, session_id))
+
     updater = Updater(telegram_token)
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("start", start))
@@ -67,7 +62,6 @@ def main() -> None:
             sends_response_user,
             project_id=project_id,
             session_id=session_id,
-            bot_log=bot_log
         ))
     )
     updater.start_polling()
