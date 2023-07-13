@@ -4,7 +4,7 @@ import telegram
 from time import sleep
 from telegram.error import NetworkError, TelegramError
 import logging
-from auxiliary_file import detect_intent_texts
+from text_dialog_flow import detect_intent_texts
 from environs import Env
 from telegram import Update
 from telegram.ext import (

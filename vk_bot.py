@@ -2,7 +2,7 @@ import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
 from environs import Env
 import random
-from auxiliary_file import detect_intent_texts
+from text_dialog_flow import detect_intent_texts
 from requests.exceptions import ReadTimeout, ConnectionError
 from time import sleep
 import telegram
