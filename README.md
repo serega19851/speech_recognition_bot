@@ -52,9 +52,11 @@ VK_GROUP_TOKEN=
 ```
 ## Тренируем DialogFlow
 
-Пример запуска
+Пример запуска. По умолчанию путь до файла phrases_file.json ведет в папку проекта, но вы можете проложить свой путь до своего файла.
 ```
 python dialog_learning.py
+python dialog_learning.py -jp или --json_path ваш путь до файла
+
 ```
 
 ## Запуск ботов
