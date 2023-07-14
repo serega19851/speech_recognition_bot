@@ -1,6 +1,9 @@
 from environs import Env
 import json
 from google.cloud import dialogflow
+import argparse
+from pathlib import Path
+import os
 
 
 def create_intent(project_id, display_name,
@@ -33,21 +36,31 @@ def create_intent(project_id, display_name,
     print("Intent created: {}".format(response))
 
 
+def gets_args():
+    parser = argparse.ArgumentParser("accepts optional args")
+    parser.add_argument(
+        "-jp", "--json_path",
+        help="in enter your path to the file",
+        default=os.path.join(Path.cwd(), "phrases_file.json")
+
+    )
+    args = parser.parse_args()
+    return args
+
+
 def main() -> None:
     env = Env()
     env.read_env()
-    project_id = env.str('PROJECT_ID')
+    project_id = env.str("PROJECT_ID")
 
-    with open("phrases_file.json", "r") as file:
-        phrases = json.loads(file.read())
+    path_json = gets_args().json_path
+    with open(path_json, "r") as file:
+        text = json.loads(file.read())
 
-    questions_text = phrases["Устройство на работу"]["questions"]
-    answer_text = [phrases["Устройство на работу"]["answer"]]
-    display_name = "My first API key - first API"
-
-    create_intent(project_id, display_name,
-                  questions_text, answer_text)
+    for topic, phrases in text.items():
+        create_intent(project_id, topic,
+                      phrases["questions"], [phrases["answer"]])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
